@@ -270,7 +270,6 @@ tbody tr.state-total{background:#f0f5fa;font-weight:600;border-top:2px solid var
           <th onclick="quickSort('stateTable',0)">State<span class="sort-icon"></span></th>
           <th onclick="quickSort('stateTable',1)">Branches<span class="sort-icon"></span></th>
           <th onclick="quickSort('stateTable',2)">Assessments<span class="sort-icon"></span></th>
-          <th onclick="quickSort('stateTable',3)">% of Total<span class="sort-icon"></span></th>
           <th onclick="quickSort('stateTable',4)">Suitable<span class="sort-icon"></span></th>
           <th onclick="quickSort('stateTable',5)">Unsuitable<span class="sort-icon"></span></th>
           <th onclick="quickSort('stateTable',6)">Suit Rate<span class="sort-icon"></span></th>
@@ -293,7 +292,6 @@ tbody tr.state-total{background:#f0f5fa;font-weight:600;border-top:2px solid var
           <th onclick="quickSort('branchTable',0)">Branch<span class="sort-icon"></span></th>
           <th onclick="quickSort('branchTable',1)">State<span class="sort-icon"></span></th>
           <th onclick="quickSort('branchTable',2)">Assessments<span class="sort-icon"></span></th>
-          <th onclick="quickSort('branchTable',3)">% of Total<span class="sort-icon"></span></th>
           <th onclick="quickSort('branchTable',4)">Suitable<span class="sort-icon"></span></th>
           <th onclick="quickSort('branchTable',5)">Unsuitable<span class="sort-icon"></span></th>
           <th onclick="quickSort('branchTable',6)">Suit Rate<span class="sort-icon"></span></th>
@@ -710,8 +708,7 @@ function renderAll() {
     let t=0, s=0;
     mths.forEach(m => { t+=c.byMonth[m]?.total||0; s+=c.byMonth[m]?.suitable||0; });
     const sp = t ? +(s/t*100).toFixed(1) : 0;
-    const pct = pctOf(t, gt);
-    return {name:c.name, state:c.state, total:t, suit:s, unsuitable:t-s, suit_pct:sp, pct, ta:c.ta};
+    return {name:c.name, state:c.state, total:t, suit:s, unsuitable:t-s, suit_pct:sp, ta:c.ta};
   }).filter(c=>c.total>0).sort((a,b)=>b.total-a.total);
 
   const branchGrandT = compRows.reduce((a,b)=>a+b.total,0);
@@ -720,8 +717,7 @@ function renderAll() {
   const branchTotalHtml = `<tr class="state-total">
     <td><strong>Total</strong></td>
     <td>${activeState==='all' ? 'All states' : activeState}</td>
-    <td data-sort="${branchGrandT}">${branchGrandT.toLocaleString()}<span class="pct-sub">100%</span></td>
-    <td>100%</td>
+    <td data-sort="${branchGrandT}">${branchGrandT.toLocaleString()}</td>
     <td>${branchGrandS.toLocaleString()}</td>
     <td>${branchGrandT-branchGrandS}</td>
     <td data-sort="${branchGrandSp}">${pill(branchGrandSp)}</td>
@@ -732,8 +728,7 @@ function renderAll() {
     <tr>
       <td><strong>${c.name}</strong></td>
       <td>${c.state}</td>
-      <td data-sort="${c.total}">${c.total.toLocaleString()}<span class="pct-sub">${c.pct} of total</span></td>
-      <td data-sort="${parseFloat(c.pct)}">${c.pct}</td>
+      <td data-sort="${c.total}">${c.total.toLocaleString()}</td>
       <td>${c.suit.toLocaleString()}</td>
       <td>${c.unsuitable}</td>
       <td data-sort="${c.suit_pct}">${pill(c.suit_pct)}</td>
@@ -757,7 +752,6 @@ function renderAll() {
   const stateTotalHtml = `<tr class="state-total">
     <td><strong>Total</strong></td><td>${stateRows.length} states</td>
     <td>${grandT.toLocaleString()}</td>
-    <td class="pct-note">100%</td>
     <td>${grandS.toLocaleString()}</td>
     <td>${grandT-grandS}</td>
     <td>${pill(grandT?+(grandS/grandT*100).toFixed(1):0)}</td>
@@ -766,13 +760,11 @@ function renderAll() {
   const stateTbody = document.getElementById('stateTableBody');
   stateTbody.innerHTML = stateRows.map(([s,sd])=>{
     const stateSp = sd.total ? +(sd.suit/sd.total*100).toFixed(1) : 0;
-    const statePct = pctOf(sd.total, gt);
     const avgAge = computeAvgAge(activeMonth === 'all' ? RAW.byState[s]?.age : RAW.byMonthState[activeMonth]?.[s]?.age);
     return `<tr>
       <td><strong>${s}</strong></td>
       <td>${sd.branches}</td>
-      <td data-sort="${sd.total}">${sd.total.toLocaleString()}<span class="pct-sub">${statePct} of total</span></td>
-      <td data-sort="${parseFloat(statePct)}">${statePct}</td>
+      <td data-sort="${sd.total}">${sd.total.toLocaleString()}</td>
       <td>${sd.suit.toLocaleString()}</td>
       <td>${sd.total-sd.suit}</td>
       <td data-sort="${stateSp}">${pill(stateSp)}</td>
